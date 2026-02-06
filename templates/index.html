@@ -1,62 +1,126 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
     <title>Tic Tac Toe AI</title>
+
     <style>
-        body { font-family: Arial; text-align: center; }
+        :root {
+            --cell-size: min(28vw, 100px);
+        }
+
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+            margin: 0;
+            padding: 1rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: #f7f7f7;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 420px;
+            background: white;
+            padding: 1rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+            text-align: center;
+        }
+
+        h1 {
+            margin-top: 0;
+        }
+
         .board {
             display: grid;
-            grid-template-columns: repeat(3, 100px);
-            gap: 5px;
-            justify-content: center;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.5rem;
+            margin: 1rem 0;
         }
-        button {
-            width: 100px;
-            height: 100px;
-            font-size: 32px;
+
+        button.cell {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            font-size: clamp(2rem, 6vw, 3rem);
+            border: none;
+            border-radius: 8px;
+            background: #eaeaea;
+            cursor: pointer;
+            touch-action: manipulation;
+        }
+
+        button.cell:disabled {
+            background: #d1d1d1;
+            cursor: not-allowed;
+        }
+
+        select {
+            width: 100%;
+            padding: 0.6rem;
+            font-size: 1rem;
+            margin-top: 0.5rem;
+        }
+
+        a {
+            display: inline-block;
+            margin-top: 1rem;
+            text-decoration: none;
+            color: #0066cc;
+        }
+
+        @media (hover: hover) {
+            button.cell:hover:not(:disabled) {
+                background: #dcdcdc;
+            }
         }
     </style>
 </head>
+
 <body>
+<div class="container">
 
-<h1>Tic Tac Toe 🤖</h1>
+    <h1>Tic Tac Toe 🤖</h1>
 
-<form method="post">
-    <label>Difficulty:</label>
-    <select name="difficulty" onchange="this.form.submit()">
-        <option value="easy" {% if difficulty == "easy" %}selected{% endif %}>Easy</option>
-        <option value="medium" {% if difficulty == "medium" %}selected{% endif %}>Medium</option>
-        <option value="hard" {% if difficulty == "hard" %}selected{% endif %}>Hard</option>
-    </select>
-</form>
+    <form method="post">
+        <label for="difficulty">Difficulty</label>
+        <select id="difficulty" name="difficulty" onchange="this.form.submit()">
+            <option value="easy" {% if difficulty == "easy" %}selected{% endif %}>Easy</option>
+            <option value="medium" {% if difficulty == "medium" %}selected{% endif %}>Medium</option>
+            <option value="hard" {% if difficulty == "hard" %}selected{% endif %}>Hard</option>
+        </select>
+    </form>
 
-<br>
-
-{% if winner %}
-    {% if winner == "Draw" %}
-        <h2>🤝 It's a Draw!</h2>
-    {% else %}
-        <h2>🏆 {{ winner }} Wins!</h2>
+    {% if winner %}
+        {% if winner == "Draw" %}
+            <h2>🤝 It's a Draw</h2>
+        {% else %}
+            <h2>🏆 {{ winner }} Wins</h2>
+        {% endif %}
     {% endif %}
-{% endif %}
 
-<form method="post">
-    <div class="board">
-        {% for cell in board %}
-            <button
-                type="submit"
-                name="move"
-                value="{{ loop.index0 }}"
-                {% if cell or winner %}disabled{% endif %}
-            >
-                {{ cell }}
-            </button>
-        {% endfor %}
-    </div>
-</form>
+    <form method="post">
+        <div class="board">
+            {% for cell in board %}
+                <button
+                    class="cell"
+                    type="submit"
+                    name="move"
+                    value="{{ loop.index0 }}"
+                    {% if cell or winner %}disabled{% endif %}
+                >
+                    {{ cell }}
+                </button>
+            {% endfor %}
+        </div>
+    </form>
 
-<br>
-<a href="{{ url_for('reset') }}">Reset Game</a>
+    <a href="{{ url_for('reset') }}">Reset Game</a>
 
+</div>
 </body>
 </html>
