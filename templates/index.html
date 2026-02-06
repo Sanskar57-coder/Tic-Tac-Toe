@@ -3,92 +3,134 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
     <title>Tic Tac Toe AI</title>
 
     <style>
         :root {
-            --cell-size: min(28vw, 100px);
+            --bg: linear-gradient(135deg, #667eea, #764ba2);
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --cell-bg: #f1f3f6;
+            --cell-hover: #e4e7ec;
+            --primary: #5b6cff;
+            --x-color: #ff5c5c;
+            --o-color: #4f9cff;
+        }
+
+        * {
+            box-sizing: border-box;
         }
 
         body {
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
             margin: 0;
-            padding: 1rem;
-            display: flex;
-            justify-content: center;
-            align-items: center;
             min-height: 100vh;
-            background: #f7f7f7;
+            background: var(--bg);
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
         }
 
-        .container {
+        .card {
             width: 100%;
             max-width: 420px;
-            background: white;
-            padding: 1rem;
-            border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 1.25rem;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
             text-align: center;
         }
 
         h1 {
-            margin-top: 0;
+            margin: 0 0 0.5rem;
+            font-size: clamp(1.6rem, 5vw, 2rem);
+        }
+
+        .difficulty {
+            margin: 0.5rem 0 1rem;
+        }
+
+        select {
+            width: 100%;
+            padding: 0.65rem;
+            font-size: 1rem;
+            border-radius: 10px;
+            border: 1px solid #ddd;
+            background: white;
+        }
+
+        .status {
+            margin: 0.75rem 0;
+            font-size: 1.1rem;
+            font-weight: 500;
         }
 
         .board {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 0.5rem;
+            gap: 0.6rem;
             margin: 1rem 0;
         }
 
-        button.cell {
-            width: 100%;
+        .cell {
             aspect-ratio: 1 / 1;
-            font-size: clamp(2rem, 6vw, 3rem);
             border: none;
-            border-radius: 8px;
-            background: #eaeaea;
+            border-radius: 14px;
+            background: var(--cell-bg);
+            font-size: clamp(2.2rem, 7vw, 3rem);
+            font-weight: 600;
             cursor: pointer;
+            transition: transform 0.08s ease, background 0.15s ease;
             touch-action: manipulation;
         }
 
-        button.cell:disabled {
-            background: #d1d1d1;
-            cursor: not-allowed;
+        .cell:active {
+            transform: scale(0.97);
         }
 
-        select {
-            width: 100%;
-            padding: 0.6rem;
-            font-size: 1rem;
-            margin-top: 0.5rem;
+        .cell:hover:not(:disabled) {
+            background: var(--cell-hover);
         }
 
-        a {
+        .cell:disabled {
+            opacity: 0.85;
+            cursor: default;
+        }
+
+        .cell.X {
+            color: var(--x-color);
+        }
+
+        .cell.O {
+            color: var(--o-color);
+        }
+
+        .reset {
             display: inline-block;
             margin-top: 1rem;
+            padding: 0.6rem 1.2rem;
+            border-radius: 999px;
+            background: var(--primary);
+            color: white;
             text-decoration: none;
-            color: #0066cc;
+            font-weight: 500;
         }
 
-        @media (hover: hover) {
-            button.cell:hover:not(:disabled) {
-                background: #dcdcdc;
+        @media (hover: none) {
+            .cell:hover {
+                background: var(--cell-bg);
             }
         }
     </style>
 </head>
 
 <body>
-<div class="container">
+<div class="card">
 
     <h1>Tic Tac Toe 🤖</h1>
 
-    <form method="post">
-        <label for="difficulty">Difficulty</label>
-        <select id="difficulty" name="difficulty" onchange="this.form.submit()">
+    <form method="post" class="difficulty">
+        <select name="difficulty" onchange="this.form.submit()">
             <option value="easy" {% if difficulty == "easy" %}selected{% endif %}>Easy</option>
             <option value="medium" {% if difficulty == "medium" %}selected{% endif %}>Medium</option>
             <option value="hard" {% if difficulty == "hard" %}selected{% endif %}>Hard</option>
@@ -96,18 +138,24 @@
     </form>
 
     {% if winner %}
-        {% if winner == "Draw" %}
-            <h2>🤝 It's a Draw</h2>
-        {% else %}
-            <h2>🏆 {{ winner }} Wins</h2>
-        {% endif %}
+        <div class="status">
+            {% if winner == "Draw" %}
+                🤝 It’s a Draw
+            {% else %}
+                🏆 {{ winner }} Wins
+            {% endif %}
+        </div>
+    {% else %}
+        <div class="status">
+            Your move
+        </div>
     {% endif %}
 
     <form method="post">
         <div class="board">
             {% for cell in board %}
                 <button
-                    class="cell"
+                    class="cell {{ cell }}"
                     type="submit"
                     name="move"
                     value="{{ loop.index0 }}"
@@ -119,7 +167,7 @@
         </div>
     </form>
 
-    <a href="{{ url_for('reset') }}">Reset Game</a>
+    <a href="{{ url_for('reset') }}" class="reset">Reset Game</a>
 
 </div>
 </body>
