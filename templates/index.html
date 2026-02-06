@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Tic Tac Toe AI</title>
+    <style>
+        body { font-family: Arial; text-align: center; }
+        .board {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            gap: 5px;
+            justify-content: center;
+        }
+        button {
+            width: 100px;
+            height: 100px;
+            font-size: 32px;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Tic Tac Toe 🤖</h1>
+
+<form method="post">
+    <label>Difficulty:</label>
+    <select name="difficulty" onchange="this.form.submit()">
+        <option value="easy" {% if difficulty == "easy" %}selected{% endif %}>Easy</option>
+        <option value="medium" {% if difficulty == "medium" %}selected{% endif %}>Medium</option>
+        <option value="hard" {% if difficulty == "hard" %}selected{% endif %}>Hard</option>
+    </select>
+</form>
+
+<br>
+
+{% if winner %}
+    {% if winner == "Draw" %}
+        <h2>🤝 It's a Draw!</h2>
+    {% else %}
+        <h2>🏆 {{ winner }} Wins!</h2>
+    {% endif %}
+{% endif %}
+
+<form method="post">
+    <div class="board">
+        {% for cell in board %}
+            <button
+                type="submit"
+                name="move"
+                value="{{ loop.index0 }}"
+                {% if cell or winner %}disabled{% endif %}
+            >
+                {{ cell }}
+            </button>
+        {% endfor %}
+    </div>
+</form>
+
+<br>
+<a href="{{ url_for('reset') }}">Reset Game</a>
+
+</body>
+</html>
